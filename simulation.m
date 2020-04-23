@@ -5,13 +5,10 @@ caseid  = 1;
 
 parameters;
 
-% phi1    = .2;
-% pi_s    = 4.05e-7;
 ups2    = 1 - ups1;
 phi2    = (1 - phi1*ups1)/(1 - ups1);
 
 dynare multisector noclearall;
-% save('init.mat', 'oo_');
 
 EndT = 1000;
 
