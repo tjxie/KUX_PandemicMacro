@@ -10,7 +10,7 @@ phi2    = (1 - phi1*ups1)/(1 - ups1);
 
 dynare multisector noclearall;
 
-EndT = 1000;
+EndT = 150;
 
 figure;
 
