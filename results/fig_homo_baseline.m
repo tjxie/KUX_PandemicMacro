@@ -10,7 +10,7 @@ filenames = {   'eta_10_phi_20_ups_50.mat',...
 
 case_names = { 'Baseline', '$\eta = 3$', 'Low $\pi_s$', '$\phi = 1$'};
 
-patterns = {'-', '-', '--' ':'};
+patterns = {'-', '-', '--', ':'};
 
 colors = [0 0 1;
             0 0.5 0;
