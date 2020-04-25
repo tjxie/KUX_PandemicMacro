@@ -26,7 +26,7 @@ set(groot, 'defaultAxesTickLabelInterpreter','latex');
 set(groot, 'defaultLegendInterpreter','latex');
 
 for n = 1:numel(var)
-    h = figure('position', [0 0 425 425]);
+    h = figure('position', [0 0 425 );
     for f = 1:numel(filenames)
         load(filenames{f});
         ind.(var{n}) = strmatch(var{n}, M_.endo_names, 'exact');    
