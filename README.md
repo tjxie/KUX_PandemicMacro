@@ -2,6 +2,7 @@
 Krueger, D., H. Uhlig, and T. Xie (2020)
 
 **Link:** <http://ssrn.com/abstract=3577745>
+
 **Version:** April 23, 2020
 
 <img src="results/fig_I.png" width="425"/> <img src="results/fig_C.png" width="425"/>
