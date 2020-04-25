@@ -1,4 +1,4 @@
-# Macroeconomic dynamics and reallocation in an epidemic
+# Macroeconomic Dynamics and Reallocation in an Epidemic
 **Authors:** Krueger, D. (U Penn), H. Uhlig (U Chicago), and T. Xie (NUS)\
 **Paper:** <http://ssrn.com/abstract=3577745>\
 **Written on:** April 23, 2020
