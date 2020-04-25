@@ -1,5 +1,5 @@
 # Macroeconomic dynamics and reallocation in an epidemic
-**Authors:** Krueger, D., H. Uhlig, and T. Xie\
+**Authors:** Krueger, D. (U Penn), H. Uhlig (U Chicago), and T. Xie (NUS)\
 **Link:** <http://ssrn.com/abstract=3577745>\
 **Written on:** April 23, 2020
 
