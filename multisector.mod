@@ -1,13 +1,32 @@
-@#define model_check = 0
+// This file replicates the model studied in:
+// Krueger, Dirk, Harald Uhlig, and Taojun Xie (2020): "Macroeconomic 
+// Dynamics and Reallocation in an Epidemic", NBER Working Paper 27047.
 
-// Specify the number of sectors, K, in odd numbers
+@#define find_init_9sector      = 0
+@#define periods                = 500
+@#define phi1                   = 0.2
+@#define pi_a                   = 0 // 0.34
 
-@#define K = 2
+// Specify the number of sectors, K, in odd numbers 
+
+@#if find_init_9sector == 1
+    @#define K = 9
+@#else
+    @#define K = 2
+@#endif
+
+@#if pi_a == 0
+    @#define pi_s = 4.05e-7
+@#else
+    @#define pi_s = 1.77e-7
+@#endif
+
+clc;
 
 var         n           (long_name = 'Labor supply')
             c           (long_name = 'Agg. consumption')
             lambda_tau  (long_name = 'Lambda')
-            tau         
+            tau         (long_name = 'Probability of infection')
             I           (long_name = 'Infected')
             T           (long_name = 'Newly infected')
             S           (long_name = 'Susceptible')
@@ -16,12 +35,13 @@ var         n           (long_name = 'Labor supply')
             C           (long_name = 'Agg. consumption')
             C_sum       (long_name = 'Agg. consumption')
             N           (long_name = 'Agg. labor')
-            Ui          
-            Us 
-            Ur
+            Ui          (long_name = 'Lifetime utility of infected')
+            Us          (long_name = 'Lifetime utility of susceptible')
+            Ur          (long_name = 'Lifetime utility of recovered')
 
             @#for k in 1:K
-                c@{k} c@{k}_dev
+                c@{k} 
+                c@{k}_dev
             @#endfor
             ;
 
@@ -43,14 +63,14 @@ parameters  pi_s        ${\pi_s}$   (long_name = 'Probability of becoming infect
 varexo      eps
             ;
 
-set_param_value('eta',      eta);
-set_param_value('pi_s',     pi_s);
-set_param_value('pi_a',     pi_a);
-set_param_value('pi_d',     pi_d);
-set_param_value('pi_r',     pi_r);
-set_param_value('betta',    betta);
-set_param_value('A',        A);
-set_param_value('theta',    theta);
+eta     = 10;
+pi_s    = @{pi_s};
+pi_a    = @{pi_a};
+pi_d    = 7*0.005/18;
+pi_r    = 7/18 - pi_d;
+betta   = 0.96^(1/52);
+A       = 39.835;
+theta   = 0.001275;
 
 @#if K != 2
     @#for k in 1:K
@@ -60,64 +80,52 @@ set_param_value('theta',    theta);
 @#endif
 
 @#if K == 2
-    set_param_value('phi1', phi1);
-    set_param_value('ups1', ups1);
-    set_param_value('phi2', phi2);
-    set_param_value('ups2', ups2);
+    phi1 = @{phi1};
+    ups1 = 0.5;
+    ups2 = 0.5;
+    phi2 = 2 - phi1;
 @#endif
-
 
 model;
 
 @#for k in 1:K
     [name = 'FOC sector @{k}']
     ups@{k}^(1/eta) * (1 / c) * (c / c@{k})^(1 / eta) 
-        = theta / A * n + pi_s * I * lambda_tau * phi@{k} * A / sqrt(theta);
-
-    [name = 'Deviation @{k}']
+        = theta / A * n + @{K} * pi_s * I * lambda_tau * phi@{k} * ups@{k} * A / sqrt(theta);
+    
     c@{k}_dev = (c@{k}/steady_state(c@{k}) - 1);
 @#endfor
 
-[name = 'Budget']
 @#for k in 1:K
     + c@{k}
 @#endfor
  = A*n;
 
-[name = 'c']
 c = (
 @#for k in 1:K
     +ups@{k}^(1/eta) * c@{k}^(1 - 1/eta)
 @#endfor
 )^(eta/(eta - 1));
 
-[name = 'tau']
-tau = A / sqrt(theta) * pi_s * I * (
+tau = A / sqrt(theta) * @{K} * pi_s * I * (
 @#for k in 1:K
-    + phi@{k}*c@{k}
+    + phi@{k}*c@{k}*ups@{k}
 @#endfor
 ) + pi_a * I;
 
-[name = 'lambda_tau']
 lambda_tau = -betta * (Ui(1) - Us(1));
 
-[name = 'Ui']
 Ui = log(A/sqrt(theta)) - theta/2*(1/sqrt(theta))^2 
         + betta*((1 - pi_d - pi_r) * Ui(1) + pi_r * Ur(1));
 
-[name = 'Ur']
 Ur = log(A/sqrt(theta)) - theta/2*(1/sqrt(theta))^2 + betta*Ur(1);
 
-[name = 'Us']
 Us = log(c) - theta/2*n^2 + betta*((1 - tau)*Us(1) + tau*Ui(1));
 
-[name = 'T']
 T = S * tau;
 
-[name = 'S']
 S - S(-1) + I - (1 - pi_r - pi_d) * I(-1) = 0;
 
-[name = 'I']
 I = T(-1) + (1 - pi_r - pi_d) * I(-1) + eps;
 
 R = R(-1) + pi_r*I(-1);
@@ -128,10 +136,13 @@ C = (S * c + (I + R) * A / sqrt(theta))/(A/sqrt(theta)) - 1;
 
 N = (S * n + (I + R) * 1 / sqrt(theta))/(1/sqrt(theta)) - 1;
 
-C_sum = (S * (c1 + c2) + (I + R) * A / sqrt(theta))/(A/sqrt(theta)) - 1;
+C_sum = (S * (
+@#for k in 1:K
+    + c@{k}
+@#endfor
+) + (I + R) * A / sqrt(theta))/(A/sqrt(theta)) - 1;
 
 end;
-
 
 steady_state_model;
 
@@ -143,8 +154,6 @@ D           = 0;
 C           = 0;
 C_sum       = 0;
 N           = 0;
-c1_dev      = 0;
-c2_dev      = 0;
 n           = 1/sqrt(theta);
 lambda_b    = theta/A*n;
 c           = A*n;
@@ -155,12 +164,13 @@ lambda_tau  = betta * (Us - Ui);
 S           = 1;
 @#for k in 1:K
     c@{k}   = ups@{k} * c;
+    c@{k}_dev = 0;
 @#endfor
 
 end;
 
 steady;
-//check;
+check;
 //model_diagnostics;
 
 shocks;
@@ -169,15 +179,29 @@ shocks;
     values  0.001;
 end;
 
-perfect_foresight_setup(periods = 5000);
+perfect_foresight_setup(periods = @{periods});
 
-@#if model_check == 0
+//
+// SIMULATIONS
+//
 
-load('init.mat');
+@#for value in 1e-9:2e-9:pi_s
+    clc;
+    pi_s = @{value};
+    disp(['pi_s = ' num2str(pi_s)]);
+    perfect_foresight_solver(stack_solve_algo=6);
+@#endfor
 
-//perfect_foresight_solver(stack_solve_algo=7, solve_algo=4, maxit=100000);
-perfect_foresight_solver(stack_solve_algo=6);
-//save('init.mat', 'oo_');
-@#endif
-//write_latex_parameter_table;
+varmat = [I S R D C N];
+titles = {'Infected', 'Susceptible', 'Recovered', 'Deceased', 'Agg. cons.', 'Agg. labor'};
+figure;
+for x = 1:size(varmat,2)
+    subplot(2,3,x);
+    plot(0:150, 100.*varmat(2:152, x), 'color', [0 0 1], 'linewidth', 2);
+    title(titles{x});
+    if x > 3
+        xlabel('Weeks');
+    end
+end
+
 clean_current_folder;
