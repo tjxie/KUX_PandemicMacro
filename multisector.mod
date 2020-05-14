@@ -33,7 +33,6 @@ var         n           (long_name = 'Labor supply')
             R           (long_name = 'Recovered')
             D           (long_name = 'Deceased')
             C           (long_name = 'Agg. consumption')
-            C_sum       (long_name = 'Agg. consumption')
             N           (long_name = 'Agg. labor')
             Ui          (long_name = 'Lifetime utility of infected')
             Us          (long_name = 'Lifetime utility of susceptible')
@@ -136,12 +135,6 @@ C = (S * c + (I + R) * A / sqrt(theta))/(A/sqrt(theta)) - 1;
 
 N = (S * n + (I + R) * 1 / sqrt(theta))/(1/sqrt(theta)) - 1;
 
-C_sum = (S * (
-@#for k in 1:K
-    + c@{k}
-@#endfor
-) + (I + R) * A / sqrt(theta))/(A/sqrt(theta)) - 1;
-
 end;
 
 steady_state_model;
@@ -193,7 +186,8 @@ perfect_foresight_setup(periods = @{periods});
 @#endfor
 
 varmat = [I S R D C N];
-titles = {'Infected', 'Susceptible', 'Recovered', 'Deceased', 'Agg. cons.', 'Agg. labor'};
+titles = {  'Infected', 'Susceptible', 'Recovered',...    
+             'Deceased', 'Agg. cons.', 'Agg. labor'};
 figure;
 for x = 1:size(varmat,2)
     subplot(2,3,x);

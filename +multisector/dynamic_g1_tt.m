@@ -22,8 +22,8 @@ assert(length(T) >= 12);
 
 T = multisector.dynamic_resid_tt(T, y, x, params, steady_state, it_);
 
-T(10) = getPowerDeriv(y(7)/y(21),T(1),1);
-T(11) = getPowerDeriv(y(7)/y(23),T(1),1);
+T(10) = getPowerDeriv(y(7)/y(20),T(1),1);
+T(11) = getPowerDeriv(y(7)/y(22),T(1),1);
 T(12) = getPowerDeriv(T(7),params(5)/(params(5)-1),1);
 
 end

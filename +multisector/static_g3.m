@@ -18,6 +18,6 @@ function g3 = static_g3(T, y, x, params, T_flag)
 if T_flag
     T = multisector.static_g3_tt(T, y, x, params);
 end
-g3 = sparse([],[],[],19,6859);
+g3 = sparse([],[],[],18,5832);
 
 end
