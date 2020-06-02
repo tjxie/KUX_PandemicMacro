@@ -4,7 +4,7 @@
 
 @#define find_init_9sector      = 0
 @#define periods                = 500
-@#define phi1                   = 1
+@#define phi1                   = 0.2
 @#define pi_a                   = 0 // 0.34
 
 // Homogeneous vs heterogeneous sectors
