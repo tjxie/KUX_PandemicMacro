@@ -243,7 +243,7 @@ M_.endo_trends = struct('deflator', cell(18, 1), 'log_deflator', cell(18, 1), 'g
 M_.NNZDerivatives = [65; -1; -1; ];
 M_.static_tmp_nbr = [9; 3; 0; 0; ];
 clc;
-M_.params(5) = 10;
+M_.params(5) = 1000000;
 eta = M_.params(5);
 M_.params(1) = 4.05e-07;
 pi_s = M_.params(1);
@@ -259,7 +259,7 @@ M_.params(7) = 39.835;
 A = M_.params(7);
 M_.params(6) = 0.001275;
 theta = M_.params(6);
-M_.params(9) = 0.2;
+M_.params(9) = 1;
 phi1 = M_.params(9);
 M_.params(10) = 0.5;
 ups1 = M_.params(10);

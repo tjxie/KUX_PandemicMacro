@@ -4,21 +4,28 @@
 
 @#define find_init_9sector      = 0
 @#define periods                = 500
-@#define phi1                   = 0.2
+@#define phi1                   = 1
 @#define pi_a                   = 0 // 0.34
 
-// Specify the number of sectors, K, in odd numbers 
-
-@#if find_init_9sector == 1
-    @#define K = 9
+// Homogeneous vs heterogeneous sectors
+@#if phi1 == 1
+    @#define eta = 1e6
 @#else
-    @#define K = 2
+    @#define eta = 10
 @#endif
 
+// Autonomous infection
 @#if pi_a == 0
     @#define pi_s = 4.05e-7
 @#else
     @#define pi_s = 1.77e-7
+@#endif
+
+// Nine-sector scenario 
+@#if find_init_9sector == 1
+    @#define K = 9
+@#else
+    @#define K = 2
 @#endif
 
 clc;
@@ -62,7 +69,7 @@ parameters  pi_s        ${\pi_s}$   (long_name = 'Probability of becoming infect
 varexo      eps
             ;
 
-eta     = 10;
+eta     = @{eta};
 pi_s    = @{pi_s};
 pi_a    = @{pi_a};
 pi_d    = 7*0.005/18;
@@ -184,6 +191,16 @@ perfect_foresight_setup(periods = @{periods});
     disp(['pi_s = ' num2str(pi_s)]);
     perfect_foresight_solver(stack_solve_algo=6);
 @#endfor
+
+@#if pi_a != 0 
+    clc;
+    @#for value in 0:1e-2:(pi_a+1e-10)
+        clc;
+        pi_a = @{value};
+        disp(['pi_a = ' num2str(pi_a)]);
+        perfect_foresight_solver(stack_solve_algo=6);
+    @#endfor
+@#endif
 
 varmat = [I S R D C N];
 titles = {  'Infected', 'Susceptible', 'Recovered',...    
