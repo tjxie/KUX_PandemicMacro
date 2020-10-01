@@ -30,6 +30,7 @@ M_.exo_names_long = cell(1,1);
 M_.exo_names(1) = {'eps'};
 M_.exo_names_tex(1) = {'eps'};
 M_.exo_names_long(1) = {'eps'};
+M_.endo_names = cell(19,1);
 M_.endo_names_tex = cell(19,1);
 M_.endo_names_long = cell(19,1);
 M_.endo_names(1) = {'n'};
