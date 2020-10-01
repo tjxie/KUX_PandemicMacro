@@ -3,20 +3,17 @@
 // Dynamics and Reallocation in an Epidemic", NBER Working Paper 27047.
 
 @#define find_init_9sector      = 0
-@#define periods                = 500
+@#define periods                = 100
 @#define phi1                   = 0.2
 @#define pi_a                   = 0 // 0.34
+@#define kappa                  = 10
+@#define alpha                  = .001
 
 // Homogeneous vs heterogeneous sectors
-@#if phi1 == 1
-    @#define eta = 1e6
-@#else
-    @#define eta = 10
-@#endif
 
 // Autonomous infection
 @#if pi_a == 0
-    @#define pi_s = 4.05e-7
+    @#define pi_s = 1.82e-6
 @#else
     @#define pi_s = 1.77e-7
 @#endif
@@ -44,6 +41,7 @@ var         n           (long_name = 'Labor supply')
             Ui          (long_name = 'Lifetime utility of infected')
             Us          (long_name = 'Lifetime utility of susceptible')
             Ur          (long_name = 'Lifetime utility of recovered')
+            dD          (long_name = 'Weekly death')
 
             @#for k in 1:K
                 c@{k} 
@@ -69,11 +67,11 @@ parameters  pi_s        ${\pi_s}$   (long_name = 'Probability of becoming infect
 varexo      eps
             ;
 
-eta     = @{eta};
+eta     = 3;
 pi_s    = @{pi_s};
 pi_a    = @{pi_a};
-pi_d    = 7*0.005/18;
-pi_r    = 7/18 - pi_d;
+pi_d    = 7*@{alpha}/@{kappa};
+pi_r    = 7*(1-@{alpha})/@{kappa};
 betta   = 0.96^(1/52);
 A       = 39.835;
 theta   = 0.001275;
@@ -92,57 +90,7 @@ theta   = 0.001275;
     phi2 = 2 - phi1;
 @#endif
 
-model;
-
-@#for k in 1:K
-    [name = 'FOC sector @{k}']
-    ups@{k}^(1/eta) * (1 / c) * (c / c@{k})^(1 / eta) 
-        = theta / A * n + @{K} * pi_s * I * lambda_tau * phi@{k} * ups@{k} * A / sqrt(theta);
-    
-    c@{k}_dev = (c@{k}/steady_state(c@{k}) - 1);
-@#endfor
-
-@#for k in 1:K
-    + c@{k}
-@#endfor
- = A*n;
-
-c = (
-@#for k in 1:K
-    +ups@{k}^(1/eta) * c@{k}^(1 - 1/eta)
-@#endfor
-)^(eta/(eta - 1));
-
-tau = A / sqrt(theta) * @{K} * pi_s * I * (
-@#for k in 1:K
-    + phi@{k}*c@{k}*ups@{k}
-@#endfor
-) + pi_a * I;
-
-lambda_tau = -betta * (Ui(1) - Us(1));
-
-Ui = log(A/sqrt(theta)) - theta/2*(1/sqrt(theta))^2 
-        + betta*((1 - pi_d - pi_r) * Ui(1) + pi_r * Ur(1));
-
-Ur = log(A/sqrt(theta)) - theta/2*(1/sqrt(theta))^2 + betta*Ur(1);
-
-Us = log(c) - theta/2*n^2 + betta*((1 - tau)*Us(1) + tau*Ui(1));
-
-T = S * tau;
-
-S - S(-1) + I - (1 - pi_r - pi_d) * I(-1) = 0;
-
-I = T(-1) + (1 - pi_r - pi_d) * I(-1) + eps;
-
-R = R(-1) + pi_r*I(-1);
-
-D = D(-1) + pi_d*I(-1);
-
-C = (S * c + (I + R) * A / sqrt(theta))/(A/sqrt(theta)) - 1;
-
-N = (S * n + (I + R) * 1 / sqrt(theta))/(1/sqrt(theta)) - 1;
-
-end;
+@#include "ModelEquations.mod"
 
 steady_state_model;
 
@@ -162,6 +110,7 @@ Ur          = Us;
 Ui          = (log(c)-theta/2*n^2+betta*pi_r*Ur)/(1-betta*(1-pi_d-pi_r));
 lambda_tau  = betta * (Us - Ui);
 S           = 1;
+dD          = 0;
 @#for k in 1:K
     c@{k}   = ups@{k} * c;
     c@{k}_dev = 0;
@@ -185,7 +134,7 @@ perfect_foresight_setup(periods = @{periods});
 // SIMULATIONS
 //
 
-@#for value in 1e-9:2e-9:pi_s
+@#for value in 1e-7:2e-8:pi_s
     clc;
     pi_s = @{value};
     disp(['pi_s = ' num2str(pi_s)]);
@@ -208,7 +157,7 @@ titles = {  'Infected', 'Susceptible', 'Recovered',...
 figure;
 for x = 1:size(varmat,2)
     subplot(2,3,x);
-    plot(0:150, 100.*varmat(2:152, x), 'color', [0 0 1], 'linewidth', 2);
+    plot(0:50, 100.*varmat(2:52, x), 'color', [0 0 1], 'linewidth', 2);
     title(titles{x});
     if x > 3
         xlabel('Weeks');
