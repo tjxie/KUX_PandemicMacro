@@ -279,7 +279,7 @@ oo_.dr.eigval = check(M_,options_,oo_);
 % SHOCKS instructions
 %
 M_.det_shocks = [ M_.det_shocks;
-struct('exo_det',0,'exo_id',1,'multiplicative',0,'periods',1:1,'value',0.001) ];
+struct('exo_det',0,'exo_id',1,'multiplicative',0,'periods',1:1,'value',0.0001) ];
 M_.exo_det_length = 0;
 options_.periods = 100;
 perfect_foresight_setup;
@@ -799,18 +799,7 @@ pi_s = M_.params(1);
 disp(['pi_s = ' num2str(pi_s)]);
 options_.stack_solve_algo = 6;
 perfect_foresight_solver;
-varmat = [I S R D C N];
-titles = {  'Infected', 'Susceptible', 'Recovered',...    
-             'Deceased', 'Agg. cons.', 'Agg. labor'};
-figure;
-for x = 1:size(varmat,2)
-subplot(2,3,x);
-plot(0:50, 100.*varmat(2:52, x), 'color', [0 0 1], 'linewidth', 2);
-title(titles{x});
-if x > 3
-xlabel('Weeks');
-end
-end
+PlotResults;
 clean_current_folder;
 save('multisector_results.mat', 'oo_', 'M_', 'options_');
 if exist('estim_params_', 'var') == 1

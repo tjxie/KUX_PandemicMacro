@@ -13,3 +13,4 @@ In this paper we argue that endogenous shifts in private consumption behavior ac
 
 - **multisector.mod** - dynare file with model equations
 - **ModelEquations.mod** - equations in the model
+- **PlotResults.m** - figures comparing actual and simulated series

@@ -125,7 +125,7 @@ check;
 shocks;
     var     eps;
     periods 1:1;
-    values  0.001;
+    values  0.0001;
 end;
 
 perfect_foresight_setup(periods = @{periods});
@@ -151,17 +151,6 @@ perfect_foresight_setup(periods = @{periods});
     @#endfor
 @#endif
 
-varmat = [I S R D C N];
-titles = {  'Infected', 'Susceptible', 'Recovered',...    
-             'Deceased', 'Agg. cons.', 'Agg. labor'};
-figure;
-for x = 1:size(varmat,2)
-    subplot(2,3,x);
-    plot(0:50, 100.*varmat(2:52, x), 'color', [0 0 1], 'linewidth', 2);
-    title(titles{x});
-    if x > 3
-        xlabel('Weeks');
-    end
-end
+PlotResults;
 
 clean_current_folder;
