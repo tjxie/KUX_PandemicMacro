@@ -1,3 +1,5 @@
+plot_periods = 50;
+
 varmat = [I S R D C N];
 titles = {'Infected', 'Susceptible', 'Recovered', 'Deceased', 'Agg. cons.', 'Agg. labor'};
 figure;

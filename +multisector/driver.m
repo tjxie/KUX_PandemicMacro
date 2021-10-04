@@ -15,9 +15,9 @@ tic0 = tic;
 global M_ options_ oo_ estim_params_ bayestopt_ dataset_ dataset_info estimation_info ys0_ ex0_
 options_ = [];
 M_.fname = 'multisector';
-M_.dynare_version = '4.6.1';
-oo_.dynare_version = '4.6.1';
-options_.dynare_version = '4.6.1';
+M_.dynare_version = '4.6.4';
+oo_.dynare_version = '4.6.4';
+options_.dynare_version = '4.6.4';
 %
 % Some global variables initialization
 %
@@ -191,6 +191,8 @@ M_.nsfwrd   = 3;
 M_.nspred   = 5;
 M_.ndynamic   = 8;
 M_.dynamic_tmp_nbr = [9; 3; 0; 0; ];
+M_.model_local_variables_dynamic_tt_idxs = {
+};
 M_.equations_tags = {
   1 , 'name' , 'FOC sector 1' ;
   2 , 'name' , 'c1_dev' ;
@@ -248,6 +250,8 @@ M_.params = NaN(12, 1);
 M_.endo_trends = struct('deflator', cell(19, 1), 'log_deflator', cell(19, 1), 'growth_factor', cell(19, 1), 'log_growth_factor', cell(19, 1));
 M_.NNZDerivatives = [68; -1; -1; ];
 M_.static_tmp_nbr = [9; 3; 0; 0; ];
+M_.model_local_variables_static_tt_idxs = {
+};
 clc;
 M_.params(5) = 3;
 eta = M_.params(5);
